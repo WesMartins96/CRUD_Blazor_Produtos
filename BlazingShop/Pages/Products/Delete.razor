@@ -66,7 +66,7 @@
             _context.Products.Remove(prod);
             await _context.SaveChangesAsync();
 
-            _navigationManager.NavigateTo("/products");
+            _navigationManager.NavigateTo("/");
         }
         catch (Exception ex)
         {
