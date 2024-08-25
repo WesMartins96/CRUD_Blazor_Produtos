@@ -1,0 +1,45 @@
+﻿@page "/"
+@inject Context _context
+
+
+<div class="mb-3">
+    <h3 class="titulo text-center text-white border-5 p-3 bg-primary justify-content-center">Listagem de Produtos</h3>
+    <a href="products/create" class="btn btn-success"><i class="oi oi-plus me-1"> </i>Adicionar Produto</a>
+</div>
+
+<table class="table table-bordered">
+    <thead class="table-primary">
+        <tr>
+            <td>#</td>
+            <td>Título</td>
+            <td>Preço</td>
+            <td>Categoria</td>
+            <td>Ações</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in _products)
+        {
+            <tr>
+                <td>@product.Id</td>
+                <td>@product.Title</td>
+                <td>@product.Price.ToString("C", new CultureInfo("pt-BR"))</td>
+                <td>@product.Category.Title</td>
+                <td>
+                    <a href="products/editar/@product.Id" class="btn btn-primary">Editar</a>
+                    <a href="products/deletar/@product.Id" class="btn btn-danger">Deletar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Product> _products = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _products = await _context.Products.Include(x => x.Category).AsNoTracking().ToListAsync();
+    }
+
+}

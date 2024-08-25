@@ -1,0 +1,76 @@
+﻿@page "/products/create"
+@inject Context _context
+@inject NavigationManager _navigationManager
+
+<div class="mb-3">
+    <h3 class="titulo text-center text-white border-5 p-3 bg-primary justify-content-center">Novo Produto</h3>
+</div>
+
+
+<EditForm Model="@_model" OnValidSubmit="SubmitAsync">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary class="alert-danger"/>
+
+    <div class="mb-3">
+        <label class="text-muted form-label" for="Title">Título</label>
+        <InputText class="form-control" type="text" id="Title" @bind-Value="_model.Title" />
+    </div>
+
+    <div class="mb-3">
+        <label class="text-muted form-label" for="Price">Preço</label>
+        <InputNumber class="form-control" type="number" id="Price" @bind-Value="_model.Price" />
+    </div>
+
+    <div class="mb-3">
+        <label class="text-muted form-label" for="CategoryId">Categoria</label>
+
+        <InputSelect id="CategoryId" @bind-Value="_model.CategoryId" class="form-control">
+            @foreach (var category in _categories)
+            {
+                <option value="@category.Id">@category.Title</option>
+            }
+        </InputSelect>
+    </div>
+
+    @if (!string.IsNullOrEmpty(_errorMsg))
+    {
+        <div class="alert alert-danger" role="alert">
+            @_errorMsg
+        </div>        
+    }
+
+    <button class="btn btn-success" type="submit">Salvar</button>
+</EditForm>
+
+
+
+
+@code {
+
+    private Product _model = new();
+    private List<Category> _categories = new();
+    string? _errorMsg = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _categories = await _context.Categories.AsNoTracking().ToListAsync();
+
+        _model.CategoryId = _categories[0].Id;
+    }
+
+    private async Task SubmitAsync()
+    {
+        try
+        {
+            await _context.Products.AddAsync(_model);
+            await _context.SaveChangesAsync();
+            _navigationManager.NavigateTo("/");
+        }
+        catch
+        {
+            _errorMsg = "Falha ao persistir os dados";
+        }
+    }
+
+}
